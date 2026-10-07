@@ -79,6 +79,14 @@ function intervalMeta(interval: TimelineInterval, blockCount: number) {
   return `${unit} ${interval.round} of ${interval.totalRounds} · exercise ${interval.exercise} of ${interval.totalExercises}`
 }
 
+/** "bicep curls · 15 lb", or just the name when there's no weight. */
+function nextLabel(interval: TimelineInterval) {
+  const name = toSentenceCase(intervalRowLabel(interval))
+  return interval.kind === 'work' && interval.weight != null
+    ? `${name} · ${formatWeight(interval.weight)}`
+    : name
+}
+
 /** Seconds alone for short intervals, minutes and seconds for blocks. */
 function countdownText(interval: TimelineInterval, remainingMs: number) {
   const seconds = Math.ceil(remainingMs / 1000)
@@ -375,8 +383,10 @@ export function TimerScreen({
   }
 
   const isPhase = current.kind === 'phase'
-  const showChecklist =
-    isPhase && current.tone === 'setup' && checklist.length > 0
+  const isSetup = isPhase && current.tone === 'setup'
+  const showChecklist = isSetup && checklist.length > 0
+  // Setup says what's first, with the weight to have in hand, like rests do.
+  const setupNext = isSetup && next ? nextLabel(next) : null
   const text = countdownText(current, snapshot.intervalRemainingMs)
   const fullText = countdownText(current, current.durationSeconds * 1000)
   const remainingLabel = formatDuration(snapshot.totalRemainingMs / 1000)
@@ -427,6 +437,7 @@ export function TimerScreen({
                   Next: {toSentenceCase(intervalRowLabel(next))}
                 </p>
               )}
+              {setupNext && <p className="timer-next">Next: {setupNext}</p>}
               {isPhase && current.tone === 'warmup' && (
                 <p className="timer-hint">Press → when you&apos;re back</p>
               )}
@@ -465,7 +476,7 @@ export function TimerScreen({
                   })}
                 </ul>
               )}
-              {current.kind !== 'rest' && (
+              {current.kind !== 'rest' && !setupNext && (
                 <p className="timer-upnext">
                   <span>Up next</span>{' '}
                   {queue.next

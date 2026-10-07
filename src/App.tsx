@@ -8,6 +8,7 @@ import { TimerScreen } from './components/TimerScreen'
 import { WorkoutEditor } from './components/WorkoutEditor'
 import { createSeedWorkouts, createStandardBlocks } from './data/seed'
 import { cuePlayer } from './lib/cues'
+import { decodeWorkoutHash, hasWorkoutHash } from './lib/share'
 import {
   createIndexedDbStore,
   type SignalStore,
@@ -81,6 +82,28 @@ export default function App({ store = defaultStore }: { store?: SignalStore }) {
       cancelled = true
     }
   }, [store])
+
+  // A shared link opens its workout in the editor, unsaved. The fragment
+  // is cleared right away so a reload does not import it again.
+  useEffect(() => {
+    const consumeLink = () => {
+      const { hash, pathname, search } = window.location
+      if (!hasWorkoutHash(hash)) {
+        return
+      }
+      window.history.replaceState(null, '', pathname + search)
+      const workout = decodeWorkoutHash(hash)
+      if (workout) {
+        setRoute({ screen: 'editor', workout, isNew: true })
+      } else {
+        setRoute({ screen: 'home' })
+        setNotice("This link doesn't contain a valid workout.")
+      }
+    }
+    consumeLink()
+    window.addEventListener('hashchange', consumeLink)
+    return () => window.removeEventListener('hashchange', consumeLink)
+  }, [])
 
   const persist = (operation: Promise<void>) => {
     operation.catch((error: unknown) =>

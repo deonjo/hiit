@@ -22,7 +22,7 @@ On first launch, HIIT saves three 47-minute workouts on this laptop:
 ## Features
 
 - Phase-colored timer with a queue rail that previews what's next
-- Weight badges, a setup checklist built from the workout's weights, and a callout when a weight changes between rounds
+- Weight badges, a setup checklist built from the workout's weights with the first exercise named under it, and a callout when a weight changes between rounds
 - Spoken callouts: each interval is named as it starts, rests say what's next and which weight to grab, and long blocks give a heads-up 10 seconds before they end
 - Three short beeps before every phase change, pitched differently for work and rest
 - Type that scales with the window, at the same sizes in every phase
@@ -32,6 +32,26 @@ On first launch, HIIT saves three 47-minute workouts on this laptop:
 - Run history: completed and stopped runs, shown on the home screen
 
 Workouts and run history are stored in IndexedDB on this device. Fonts and assets are cached by the service worker, so the app works offline.
+
+## Sharing workouts
+
+Every workout card and the editor have a Share button. On a laptop it copies a link to the clipboard; on a phone or tablet it opens the share sheet. Opening the link on another device shows the workout in the editor, unsaved, so the recipient can look it over before saving. Run history is not shared.
+
+The whole workout lives in the URL fragment, so no server is involved and the link is readable:
+
+```
+https://<host>/#v=1&n=Tuesday+arms&d=tu&b=warmup:25m:Run+%2F+stretch;setup:5m:Set+up+equipment;circuit:3x45/15:Arms+and+core:Bicep+curls@15/20,Plank,Tricep+extension@5,Plank;cleanup:5m:Put+equipment+away
+```
+
+| Part | Meaning |
+| --- | --- |
+| `v=1` | Format version |
+| `n=` | Workout name, percent-encoded with `+` for spaces |
+| `d=` | Repeat days: `mo`, `tu`, `we`, `th`, `fr`, `sa`, `su` |
+| `b=` | Blocks separated by `;`, with fields separated by `:` |
+| `warmup:25m:name` | A timed block. Kinds are `warmup`, `setup`, `cleanup`, `recovery`, and `timed`. Durations are `25m` for whole minutes, otherwise seconds; `1m30` also works. |
+| `circuit:3x45/15:name:exercises` | A circuit of 3 rounds, 45 s work, 15 s rest. `sets` in place of `circuit` finishes each exercise before moving on. |
+| `Bicep+curls@15/20,Plank` | Exercises separated by `,`. Weights in lb follow `@`, one per round separated by `/`. Trailing repeats are dropped, so `@15/20` is 15, 20, 20. No `@` means bodyweight. |
 
 ## Keyboard
 

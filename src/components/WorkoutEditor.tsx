@@ -50,6 +50,7 @@ import {
   PlusIcon,
 } from './Icons'
 import { Menu, type MenuItem } from './Menu'
+import { ShareButton } from './ShareButton'
 import { WorkoutStrip } from './WorkoutStrip'
 
 interface WorkoutEditorProps {
@@ -476,6 +477,7 @@ export function WorkoutEditor({
           >
             Delete
           </button>
+          <ShareButton workout={draft} variant="text" disabled={!valid} />
           <button
             className="button button-heat"
             type="button"

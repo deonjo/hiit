@@ -8,6 +8,7 @@ import { calculateWorkoutDuration, validateWorkout } from '../lib/workout'
 import type { Weekday, Workout, WorkoutRun } from '../types/workout'
 import { DayPicker } from './DayPicker'
 import { CloseIcon, EditIcon, PlayIcon, PlusIcon } from './Icons'
+import { ShareButton } from './ShareButton'
 import { WorkoutStrip } from './WorkoutStrip'
 
 export type NewWorkoutSource =
@@ -68,6 +69,7 @@ function WorkoutCard({ workout, run, now, onStart, onEdit }: WorkoutCardProps) {
           </p>
         </div>
         <div className="workout-card-actions">
+          <ShareButton workout={workout} variant="icon" disabled={!runnable} />
           <button
             className="icon-button"
             type="button"

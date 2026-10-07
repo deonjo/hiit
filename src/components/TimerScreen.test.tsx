@@ -113,6 +113,15 @@ describe('TimerScreen', () => {
     expect(screen.queryByText(/^Grab/)).toBeNull()
   })
 
+  it('says what is first, with its weight, during setup', async () => {
+    const user = userEvent.setup()
+    renderTimer()
+
+    await user.keyboard('{ArrowRight}')
+    expect(screen.getByText('Setup · block 2 of 4')).toBeVisible()
+    expect(screen.getByText('Next: bicep curls · 15 lb')).toBeVisible()
+  })
+
   it('calls out a weight change at the end of a round', async () => {
     const user = userEvent.setup()
     renderTimer()

@@ -148,6 +148,15 @@
   font-size: 13px;
 }
 
+.editor-share {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.editor-share[data-status='failed'] {
+  color: var(--danger);
+}
+
 .chip {
   padding: 1px 8px;
   border: 1.5px solid var(--char);
